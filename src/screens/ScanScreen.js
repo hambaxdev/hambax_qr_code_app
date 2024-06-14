@@ -22,7 +22,6 @@ const ScanScreen = () => {
 
     const handleBarCodeScanned = async ({ type, data }) => {
         setScanned(true);
-        // setMessage('Scanning...');
         console.log('QR code scanned:', { type, data });
 
         try {
@@ -38,18 +37,25 @@ const ScanScreen = () => {
             console.log('Response from API:', response.data);
             setMessage(response.data.message);
 
-            // Показать зеленый экран на 1.5 секунды
-            setShowSuccess(true);
-            setTimeout(() => {
-                setShowSuccess(false);
-                setScanned(false);
-            }, 1500);
+            if (response.data.active === 0) {
+                // Если QR-код уже использован (active равно 0), показать красный экран
+                setShowError(true);
+                setTimeout(() => {
+                    setShowError(false);
+                    setScanned(false);
+                }, 1000);
+            } else {
+                // Если все в порядке, показать зеленый экран
+                setShowSuccess(true);
+                setTimeout(() => {
+                    setShowSuccess(false);
+                    setScanned(false);
+                }, 1500);
+            }
         } catch (error) {
             console.error('Error scanning QR code:', error);
-            // setMessage('Error scanning QR code');
-            
 
-            // Показать красный экран на 1 секунду
+            // Показать красный экран на 1 секунду в случае ошибки
             setShowError(true);
             setTimeout(() => {
                 setShowError(false);
